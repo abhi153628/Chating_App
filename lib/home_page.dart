@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AuthService(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Chat App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
@@ -468,15 +470,19 @@ Future<UserModel?> getUserById(String uid) async {
       
       // Update latest message in chat document (using original text for preview)
       await _firestore.collection('chats').doc(chatId).set({
-        'latestMessage': content.length > 20 ? content.substring(0, 20) + '...' : content, // Show preview in unencrypted form
+        'latestMessage': content.length > 20 ? '${content.substring(0, 20)}...' : content, // Show preview in unencrypted form
         'timestamp': DateTime.now(),
         'participants': [senderId, receiverId], // Ensure participants field exists
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       
-      print('Encrypted message sent successfully to chat $chatId');
+      if (kDebugMode) {
+        print('Encrypted message sent successfully to chat $chatId');
+      }
     } catch (e) {
-      print('Error sending message: ${e.toString()}');
+      if (kDebugMode) {
+        print('Error sending message: ${e.toString()}');
+      }
     }
   }
   
@@ -549,6 +555,8 @@ Future<UserModel?> getUserById(String uid) async {
 // File: lib/screens/wrapper.dart
 class Wrapper extends StatelessWidget {
   final DatabaseService _database = DatabaseService();
+
+  Wrapper({super.key});
   
   @override
   Widget build(BuildContext context) {
@@ -580,7 +588,10 @@ class Wrapper extends StatelessWidget {
 }
 // File: lib/screens/auth/authenticate.dart
 class Authenticate extends StatefulWidget {
+  const Authenticate({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _AuthenticateState createState() => _AuthenticateState();
 }
 
