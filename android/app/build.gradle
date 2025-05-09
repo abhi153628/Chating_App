@@ -8,6 +8,13 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+dependencies {
+    // Add this line
+    implementation "androidx.fragment:fragment:1.3.6"
+    implementation "androidx.core:core-ktx:1.7.0"
+    // Other dependencies...
+}
+
 android {
     namespace = "com.example.chating_app"
     compileSdk = flutter.compileSdkVersion
